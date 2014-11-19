@@ -3,9 +3,11 @@ from factors import Factors
 import numpy as np
 import pandas as pd 
 
+
+"""
+Run the obs.csv file through the feature/factor maker and save to .csv file. 
+"""
 obs_path = "obs.csv"
-
-
 obs = pd.DataFrame.from_csv(obs_path, index_col=120, header= None)
 obs_f = spherical_feature().compute(obs.values).astype(float) 
 obs_f = pd.DataFrame(obs_f, index=obs.index)
