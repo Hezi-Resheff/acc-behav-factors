@@ -29,6 +29,9 @@
     <Compile Include="feature.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="feature_selection.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
