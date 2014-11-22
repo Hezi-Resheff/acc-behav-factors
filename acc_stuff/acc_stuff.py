@@ -3,7 +3,6 @@ from factors import Factors
 import numpy as np
 import pandas as pd 
 
-
 obs_path = "C:\\Users\\t-yeresh\\Documents\\explore\\odba\\obs.csv"
 
 obs = pd.DataFrame.from_csv(obs_path, index_col=120, header= None)
