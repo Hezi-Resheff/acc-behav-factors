@@ -56,6 +56,7 @@ class spherical_feature(object):
         return np.array([self._compute(sample) for sample in samples])
 
     def _compute(self, sample):
+       
         # the sphirical part 
         x, y, z = np.reshape(sample, (len(sample)/3,3)).T 
         r = np.sqrt(x**2 + y**2 + z**2) 
@@ -64,8 +65,8 @@ class spherical_feature(object):
         
         # descretize
         r = (r/8).astype(int); r[r>2] = 2 
-        theta = (theta / (np.pi/4)).astype(int)
-        thi =   ((thi+np.pi) /(np.pi/2)).astype(int)
+        theta = (theta / (np.pi/4)).astype(int) % 4    
+        thi =   ((thi+np.pi) /(np.pi/2)).astype(int) % 4
 
         # hist 
         f_mat = np.zeros((3, 4, 4)) #3*4*4 = 48 options      

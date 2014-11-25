@@ -29,7 +29,7 @@ def forward_select(features, num_features=20, num_splits = 3):
         
         for current in f_unselected:
             
-            #print("Current feature: ", current)
+            print("n=", nFeatures, " Current feature: ", current)
 
             # current data view 
             data = features[f_selected + [current]]
@@ -53,6 +53,18 @@ def forward_select(features, num_features=20, num_splits = 3):
         p_correct.append(current_score)
 
     return pd.Series(p_correct, f_selected)
+
+
+def ranking_selection(features, num_features=20, num_splits = 3, ranking_type=None):
+    """
+    features - pd.DataFrame with features in columns and labels in the index.
+    num_features - the number of features to select.
+    num_splits - the number of splits for the cross validation procedure on each step.
+    ranking_type - how to rank the features 
+    reutrn the order of selection and preformance for each step.
+    """
+    pass 
+
 
 
 
