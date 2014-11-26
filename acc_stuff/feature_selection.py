@@ -4,13 +4,15 @@ How many features do we need to reach *ok* classification?
 """
 
 import numpy as np
+from scipy import stats 
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.cross_validation import KFold
+from sklearn.decomposition import PCA
 
 
 def forward_select(features, num_features=20, num_splits = 3):
-    """
+    """ Forward feature selection
     features - pd.DataFrame with features in columns and labels in the index.
     num_features - the number of features to select.
     num_splits - the number of splits for the cross validation procedure on each step.
@@ -55,16 +57,61 @@ def forward_select(features, num_features=20, num_splits = 3):
     return pd.Series(p_correct, f_selected)
 
 
-def ranking_selection(features, num_features=20, num_splits = 3, ranking_type=None):
+def ranking_selection(features, num_features=20, num_splits = 3, ranking_type='f-test', predefinde_order=None):
+    """ Feature selection in the order of a ranking 
+    features - pd.DataFrame with features in columns and labels in the index.
+    num_features - the number of features to select.
+    num_splits - the number of splits for the cross validation procedure on each step.
+    ranking_type - how to rank the features 
+    predifined_order - for ranking_type == 'pre', defines the order of the ranking 
+    reutrn the order of selection and preformance for each step.
     """
+    clf = SVC(kernel='linear')
+
+    all_features = features.columns.values 
+    f_selected = []
+    p_correct = []
+
+    # sort features by the p-value of the ANOVA on the classes 
+    if ranking_type == 'f-test':
+        ranking = np.argsort([ stats.f_oneway(*features[f].groupby(features.index).apply(list).tolist())[1] for f in features.columns.values])
+    elif ranking_type=='linear':
+        ranking = np.arange(features.shape[1])  #linear order -- just the order of the columns 
+    elif ranking_type == 'pre':
+        ranking = predefinde_order
+    else:
+        # unimplemented 
+        return None 
+
+    ranking = all_features[ranking] 
+   
+    for next_feature in ranking:
+        f_selected.append(next_feature)
+        print("Adding feature: ", next_feature)
+      
+        data = features[f_selected]  # current data view 
+        score = [] # cross validation
+        for train_idx, test_idx in KFold(data.shape[0], n_folds = num_splits, shuffle=True):
+            clf.fit(data.iloc[train_idx], data.iloc[train_idx].index.values)
+            out = clf.predict(data.iloc[test_idx])
+            out = (out == data.iloc[test_idx].index.values).mean()
+            score.append(out)
+        score = np.mean(score)
+
+        p_correct.append(score)
+
+    return pd.Series(p_correct, f_selected)
+
+def pca_selection(features, num_features=20, num_splits=3): 
+    """ Feature selection in after PCA and in the order of the pca vectors. 
     features - pd.DataFrame with features in columns and labels in the index.
     num_features - the number of features to select.
     num_splits - the number of splits for the cross validation procedure on each step.
     ranking_type - how to rank the features 
     reutrn the order of selection and preformance for each step.
     """
-    pass 
-
+    return ranking_selection(pd.DataFrame(PCA().fit_transform(features), index=features.index), ranking_type='linear')
+    
 
 
 
@@ -74,7 +121,7 @@ if __name__ == "__main__":
     data, labels = make_classification(n_samples=100, n_features=20, n_informative=10, n_redundant=10, n_classes=4, n_clusters_per_class=2, class_sep=10, hypercube=False)
     data = pd.DataFrame(data, index=labels)
     
-    selection = forward_select(data, num_features=20, num_splits=2)
+    selection = pca_selection(data, num_features=20, num_splits=2)
     print(selection)
 
 

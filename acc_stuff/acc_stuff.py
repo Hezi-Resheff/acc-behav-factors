@@ -1,6 +1,6 @@
 from feature import spherical_feature
 from factors import Factors
-from feature_selection import forward_select
+from feature_selection import forward_select, ranking_selection, pca_selection
 import numpy as np
 import pandas as pd 
 
@@ -19,8 +19,14 @@ obs_fact = Factors(labels=["AF", "PF", "WLK", "STD", "SIT"]).fit_transform(obs_f
 #obs_fact.to_csv("f_obs_factors.csv", header=False, index=True)
 
 """
-Featuer selection on the features 
+Feature selection on the features 
 """
-s = forward_select(obs_f, num_features=obs_f.shape[1], num_splits=5)
-s.to_csv("forward_selection.csv")
+#s = forward_select(obs_f, num_features=obs_f.shape[1], num_splits=5)
+#s.to_csv("forward_selection.csv")
 
+
+#s = ranking_selection(obs_f, num_features=obs_f.shape[1], num_splits=5)
+#s.to_csv("anova_selection.csv")
+
+s = pca_selection(obs_f, num_features=obs_f.shape[1], num_splits=5)
+s.to_csv("pca_selection.csv")
