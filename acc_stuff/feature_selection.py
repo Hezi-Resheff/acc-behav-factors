@@ -113,6 +113,12 @@ def pca_selection(features, num_features=20, num_splits=3):
     return ranking_selection(pd.DataFrame(PCA().fit_transform(features), index=features.index), ranking_type='linear')
     
 
+class Selector(object):
+    """ Manage feature selection
+    """
+    def __init__(self): pass
+    def fit(self, data): pass
+    def select(self, data): pass 
 
 
 if __name__ == "__main__":
