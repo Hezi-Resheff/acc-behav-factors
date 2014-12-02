@@ -1,5 +1,6 @@
 """
 Features of the ACC signal. 
+Should have a base class, but...
 """
 
 import numpy as np
@@ -80,11 +81,22 @@ class spherical_feature(object):
         return np.hstack((np.array(moments).flatten(), f_mat.flatten()))
 
 
+class simple_features(object):
+    def __inin__(self): pass 
+    
+    def compute(self, samples):
+        return np.array([self._compute(sample) for sample in samples])
+
+    def _compute(self, sample): 
+        x, y, z = np.reshape(sample, (len(sample)/3,3)).T 
+        m = [[f(x), f(y), f(z)] for f in (np.mean, np.std, stats.skew, stats.kurtosis) ]
+        return np.array(m).flatten() 
+
 if __name__ == "__main__":
     sample = np.zeros(120) + 2*np.random.rand(120) - 1
     samples= [sample for i in range(5)]
 
-    f = transition_feature(threshold=.33).compute(samples)
+    f = simple_features().compute(samples)
     print(f)
 
 
