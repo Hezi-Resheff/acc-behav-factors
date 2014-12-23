@@ -51,7 +51,7 @@ class transition_feature(object):
        return mat.flatten()
 
 class spherical_feature(object):
-    def __inin__(self): pass 
+    def __init__(self): pass 
     
     def compute(self, samples):
         return np.array([self._compute(sample) for sample in samples])
