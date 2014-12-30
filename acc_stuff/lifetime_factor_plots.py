@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from local_settings import DATA_FOLDER, PLOTS_OUT
 from feature import simple_features
-from factors import Factors
+from factors import FactorsSemiSup
 from plots import plot_factors
 
 DAILY_AGGREGATION = True
@@ -38,7 +38,7 @@ for animal_id in unique_animals:
 
         # transform to factors 
         labels = [["AF", "PF", "WLK", "STD", "SIT"][i-2] for i in np.unique(feature_frame.index)]
-        factor_loading = Factors(labels=labels).fit_transform(feature_frame)
+        factor_loading = FactorsSemiSup(labels=labels).fit_transform(feature_frame)
         factor_loading.index = pd.DatetimeIndex(data[data.index==animal_id][1]) #date 
         
         if DAILY_AGGREGATION:
