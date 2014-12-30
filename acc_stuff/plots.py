@@ -27,7 +27,7 @@ def plot_factors(factor, behav, gps, where_behav=None, show_true_behav=True):
      ax0.xaxis.set_visible(True)
 
      # factor loadings 
-     ax1 = plt.subplot(gs[1], sharex=ax0)
+     ax1 = plt.subplot(gs[1])
      factor.plot(ax=ax1, style="-x", title="Factor Loadings")
      
      # behav 
@@ -39,4 +39,3 @@ def plot_factors(factor, behav, gps, where_behav=None, show_true_behav=True):
          ax2.yaxis.set_visible(False)
 
      
-

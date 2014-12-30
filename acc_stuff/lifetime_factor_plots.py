@@ -33,8 +33,8 @@ for animal_id in unique_animals:
 
         # calc features
         feature_frame = pd.DataFrame(data=simple_features().compute(acc_data[data.index==animal_id]),
-                                     index=data[data.index==animal_id][3], #behav-code 
-                                     columns=None)
+                                        index=data[data.index==animal_id][3], #behav-code 
+                                        columns=None)
 
         # transform to factors 
         labels = [["AF", "PF", "WLK", "STD", "SIT"][i-2] for i in np.unique(feature_frame.index)]
@@ -47,17 +47,18 @@ for animal_id in unique_animals:
         else:
             #true behav
             behav = pd.DataFrame(data=np.array([feature_frame.index==behav for behav in np.unique(feature_frame.index)]).T, 
-                         index=factor_loading.index, 
-                         columns=labels)
+                            index=factor_loading.index, 
+                            columns=labels)
 
         gps = pd.DataFrame(data=gps_data[gps_data.index == animal_id])
         gps.index = pd.DatetimeIndex(gps.date) 
         gps = gps[['lat','long']]
+        gps = gps.groupby(gps.index).mean() #daily mean coordinates 
 
         plot_factors(factor_loading, behav, gps, where_behav=None, show_true_behav=not DAILY_AGGREGATION)
 
         plt.gcf().set_size_inches(18.5, 10.5)
-        plt.savefig(os.path.join(PLOTS_OUT, "factors_daily_agg", str(animal_id) + ".png"), bbox_inches='tight', dpi=300)
+        plt.savefig(os.path.join(PLOTS_OUT, "semi-sup-factors","factors_daily_agg", str(animal_id) + ".png"), bbox_inches='tight', dpi=300)
         #plt.show()
 
     except:
