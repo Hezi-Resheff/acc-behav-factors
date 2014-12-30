@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e1aed930-5e79-4097-9ba3-ed43fb63e1e1</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>acc_stuff.py</StartupFile>
+    <StartupFile>lifetime_factor_plots_semi_sup.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -32,7 +32,16 @@
     <Compile Include="feature_selection.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="lifetime_factor_plots.py">
+    <Compile Include="lifetime_factor_plots_semi_sup.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="local_settings.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="plots.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="utils.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
