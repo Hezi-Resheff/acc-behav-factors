@@ -23,6 +23,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="acc_stuff.py" />
+    <Compile Include="EM_sup.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="factors.py">
       <SubType>Code</SubType>
     </Compile>
