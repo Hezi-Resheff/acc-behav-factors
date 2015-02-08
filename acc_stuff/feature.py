@@ -4,8 +4,12 @@ Should have a base class, but...
 """
 
 import numpy as np
+import pandas as pd 
+import os 
 import scipy.stats as stats 
+from sklearn.cluster import MiniBatchKMeans
 
+from local_settings import *
 
 """
 features are the histogram of transitions between +/-/0 values of ACC in each axis
@@ -92,11 +96,48 @@ class simple_features(object):
         m = [[f(x), f(y), f(z)] for f in (np.mean, np.std, stats.skew, stats.kurtosis) ]
         return np.array(m).flatten() 
 
+
+class MultiScalePatches(object):
+    """
+    Represent an ACC sample with a patch-codebook on multiple scales 
+    """
+    def __init__(self, scales, size):
+        """
+        scales - list of scaels to use 
+        size - list of sized of codebooks for each scals | int for 1 size 4 all 
+        """
+        self._scales = scales
+        self._size = np.ones_like(scales)*size 
+        self._models = [{'scale':scale, 'cbsize':sz, 'patches':[], 'km':MiniBatchKMeans(n_clusters=sz)} \
+                        for scale, sz in zip(self._scales, self._size)]
+
+
+    def _get_patches(self, row, scale):
+        return [row[:, i:i+scale].ravel() for i in range(row.shape[1]-scale)]
+
+    def _add_patches(self, row):
+        for model in self._models:            
+            model['patches'].extend(self._get_patches(row, model['scale']))
+        
+    def fit(self, data):
+        for row in data:
+            self._add_patches(row.reshape(40, 3).T)
+        for model in self._models:
+            model['km'].fit(model['patches'])
+            model['patches'] = []
+        return self
+
+    def _transform(self, row):
+        rep = [np.histogram(model['km'].predict(self._get_patches(row, model['scale'])), np.arange(model['cbsize']+1))[0] for model in self._models]
+        return np.hstack(rep)
+
+    def transform(self, data):
+        return np.array([self._transform(row.reshape(40, 3).T) for row in data])
+
+
 if __name__ == "__main__":
-    sample = np.zeros(120) + 2*np.random.rand(120) - 1
-    samples= [sample for i in range(5)]
-
-    f = simple_features().compute(samples)
-    print(f)
-
-
+    data = pd.DataFrame.from_csv(os.path.join(DATA_FOLDER, "storks2012", "obs.csv"),index_col=120, header= None)
+    data.index.name = ''
+    ftr = MultiScalePatches(scales=[3, 5], size=20).fit(data.values)
+    out = ftr.transform(data.values)
+    pd.DataFrame(out, index=data.index).to_csv(os.path.join(DATA_FOLDER, "storks2012", "obs_multiscale_codebook35.csv"))
