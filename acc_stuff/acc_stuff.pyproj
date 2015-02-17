@@ -44,9 +44,16 @@
     <Compile Include="plots.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="rep_shays_exp.py" />
+    <Compile Include="roi\thermal.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="utils.py">
       <SubType>Code</SubType>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="roi\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

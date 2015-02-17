@@ -42,7 +42,7 @@ for animal_id in unique_animals:
         factor_loading.index = pd.DatetimeIndex(data[data.index==animal_id][1]) #date 
         
         if DAILY_AGGREGATION:
-            factor_loading = factor_loading.groupby(factor_loading.index).mean()[['AF','PF']]
+            factor_loading = factor_loading.groupby(factor_loading.index).mean()[['AF', 'PF']]
             behav = None # if averaging then can't show the actualy behav... 
         else:
             #true behav

@@ -8,6 +8,23 @@ import matplotlib.pyplot as plt
 from matplotlib import gridspec
 pd.options.display.mpl_style = 'default'
 
+
+def plot_gps(gps):
+    ids = np.unique(gps.id.values)
+
+    for animal_id in ids:
+        print(animal_id)
+        fig = plt.figure()
+        ax0 = fig.add_subplot(2, 1, 1)
+        ax1 = fig.add_subplot(2, 1, 2)
+        this_ix = np.where(gps.id == animal_id)
+        this_gps = gps.iloc[this_ix]
+        this_gps.set_index(['date'], inplace=True)
+        this_gps.lat.plot(ax=ax0, style="x")
+        this_gps.long.plot(ax=ax1, style="x")
+        plt.show()
+
+
 def plot_factors(factor, behav, gps, where_behav=None, show_true_behav=True):
     
      if where_behav:
@@ -23,12 +40,12 @@ def plot_factors(factor, behav, gps, where_behav=None, show_true_behav=True):
             
         
      ax0 = plt.subplot(gs[0])
-     gps.plot(ax=ax0, style="-x", title="GPS")
+     gps.plot(ax=ax0, style="x", title="GPS")
      ax0.xaxis.set_visible(True)
 
      # factor loadings 
      ax1 = plt.subplot(gs[1])
-     factor.plot(ax=ax1, style="-x", title="Factor Loadings")
+     factor.plot(ax=ax1, style="-o", title="Factor Loadings")
      
      # behav 
      if show_true_behav:
