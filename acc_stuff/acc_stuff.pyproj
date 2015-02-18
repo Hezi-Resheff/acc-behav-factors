@@ -48,11 +48,15 @@
     <Compile Include="roi\thermal.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Shay\move_bank.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="utils.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Shay\" />
     <Folder Include="roi\" />
   </ItemGroup>
   <PropertyGroup>
