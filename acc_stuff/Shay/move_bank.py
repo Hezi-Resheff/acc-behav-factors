@@ -27,7 +27,11 @@ def process_acc_file(f_name):
 
     return out
 
+def process_gps_file(f_name):
+    pass
 
+def insert(frame, table):
+    pass 
 
 test_file = "C:\\Users\\heziresheff\\Downloads\\acc.csv"
 out = process_acc_file(test_file)
