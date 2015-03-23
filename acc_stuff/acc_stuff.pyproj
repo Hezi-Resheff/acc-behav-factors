@@ -48,6 +48,10 @@
     <Compile Include="roi\thermal.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="self_contained\acc_patcehs\calcstats.py" />
+    <Compile Include="self_contained\acc_patcehs\exp1.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Shay\move_bank.py">
       <SubType>Code</SubType>
     </Compile>
@@ -56,8 +60,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="self_contained\" />
+    <Folder Include="self_contained\acc_patcehs\" />
     <Folder Include="Shay\" />
     <Folder Include="roi\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="self_contained\acc_patcehs\storks_obs_train.csv" />
+    <Content Include="self_contained\acc_patcehs\vultures.csv" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
