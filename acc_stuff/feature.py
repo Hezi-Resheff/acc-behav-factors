@@ -138,6 +138,6 @@ class MultiScalePatches(object):
 if __name__ == "__main__":
     data = pd.DataFrame.from_csv(os.path.join(DATA_FOLDER, "storks2012", "obs.csv"),index_col=120, header= None)
     data.index.name = ''
-    ftr = MultiScalePatches(scales=[3, 5], size=20).fit(data.values)
+    ftr = MultiScalePatches(scales=[3, 5, 7], size=20).fit(data.values)
     out = ftr.transform(data.values)
     pd.DataFrame(out, index=data.index).to_csv(os.path.join(DATA_FOLDER, "storks2012", "obs_multiscale_codebook35.csv"))

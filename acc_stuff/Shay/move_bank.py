@@ -104,7 +104,7 @@ def insert(frame, table):
                          port = PORT)
 
     # insert table 
-    frame = frame.where(pd.notnull(frame), None) #N/A => Noone so SQL is happy 
+    frame = frame.where(pd.notnull(frame), None) #N/A => None so SQL is happy 
     frame.to_sql(table, db, flavor='mysql', if_exists='append', index=False, chunksize=100 )
    
 

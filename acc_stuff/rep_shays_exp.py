@@ -22,9 +22,15 @@ def dates_selector(dates):
 # load metadata
 def load_meta():
     print("Loading metadata")
-    meta = pd.DataFrame.from_csv(os.path.join(DATA_FOLDER, "storks_exp_rep", "meta.txt"), index_col=0)
-    return meta
-    
+    return pd.DataFrame.from_csv(os.path.join(DATA_FOLDER, "storks_exp_rep", "meta.txt"), index_col=0)
+
+
+# load migration dates table 1
+def load_migration():
+    print("Loading migration data")
+    return pd.DataFrame.from_csv(os.path.join(DATA_FOLDER, "storks_exp_rep",
+                                 "storks_migration_start_end_date.csv"), index_col=0).replace('\\N', np.NaN)
+
 
 # load & process GPS data
 def load_gps():
@@ -73,7 +79,7 @@ def animal_plots(gps, acc, meta):
         plt.show()
 
 
-def build_exp_groups(gps, acc, meta):
+def build_exp_groups(gps, acc, meta, mig):
     """ return the mean active/passive flight per animal per year with a Juv/Adult flag """ 
     print("Generating experiment groups...")
     
@@ -85,7 +91,7 @@ def build_exp_groups(gps, acc, meta):
         
         # is this a E pathway animal? Otherwise not interested...
         if animal not in meta.index or 'W' in meta.loc[animal]['mig_flyway']: 
-            print('Disgarding; Not in metadata or uses W mig flyway.')
+            print('Discarding; Not in metadata or uses W mig flyway.')
             continue
         
         # get data for this animal
@@ -101,11 +107,25 @@ def build_exp_groups(gps, acc, meta):
             status = "Juv" if year==start_year else "Adult" 
             print("Year: ", year, status)
 
-            # compute measures and add row 
-            true_behav = (this_acc[pd.DatetimeIndex(this_acc.date).year==year]["behav"]==2).mean() 
-            unsup_behav =  acc_year.mean(axis=0).values.tolist() 
+            # process start/end dates of mig.
+            this_mig = mig[(mig.index == animal) & (mig.year == year)]
+            if this_mig.shape[0] == 0 or (this_mig['end_date'].isnull().values and status == "Juv"):
+                print("Discarding; Didn't finish migration or not in migration file. ")
+                continue
+
+            # find the index of the data to use
+            year_ix = pd.DatetimeIndex(this_acc.date).year == year
+            mig_ix = pd.DatetimeIndex(this_acc.date)[year_ix] > this_mig['start_date'].values[0]
+            if ~this_mig['end_date'].isnull().values:
+                mig_ix[pd.DatetimeIndex(this_acc.date)[year_ix] < this_mig['end_date'].values[0]] = False
+
+            # compute measures and add row
+            true_behav = (this_acc[year_ix][mig_ix]["behav"]==2).mean()
+            unsup_behav =  acc_year[mig_ix].mean(axis=0).values.tolist()
+
             n_samples = len(acc_year)
             min_lat = this_gps[pd.DatetimeIndex(this_gps.date).year==year]['lat'].min()
+
             row = [animal, year, status] +  [true_behav] + unsup_behav + [n_samples, min_lat]
             print(row)
             data.append(row)
@@ -113,26 +133,26 @@ def build_exp_groups(gps, acc, meta):
     return pd.DataFrame(data, columns=['id', 'year', 'status', 'AF_true_frac', 'AF_factor', 'PF_factor', 'N', 'min_lat'])
 
 
-def run_experiment():
+def run_experiment(name):
     """ Put the experiment all together... """
+    mig = load_migration()
     gps = load_gps()
     acc = load_acc()
     meta = load_meta()
-    frame = build_exp_groups(gps, acc, meta)
-    frame.to_csv(os.path.join(DATA_FOLDER, "storks_exp_rep", "out", "JuvAdltSimpleF.csv"))
+    frame = build_exp_groups(gps, acc, meta, mig)
+    frame.to_csv(os.path.join(DATA_FOLDER, "storks_exp_rep", "out", name))
     
 
-def results_plots(min_samples = 800, min_lat = 55):
+def results_plots(name, min_n=2000):
     
-    frame = pd.DataFrame.from_csv(os.path.join(DATA_FOLDER, "storks_exp_rep", "out", "JuvAdltSimpleF.csv"))
-    frame = frame[frame.N > min_samples] 
-    frame = frame[frame.min_lat < min_lat]
-   
+    frame = pd.DataFrame.from_csv(os.path.join(DATA_FOLDER, "storks_exp_rep", "out", name))
+    frame = frame[frame.N >= min_n]
+
     # 0) Sig tests
     behav_semi_sup = frame.AF_factor
     juv_idx = frame.status == 'Juv'
     adult_idx = frame.status == 'Adult'
-    print("semi: ", np.array([1, .5])*ttest_ind(behav_semi_sup[juv_idx], behav_semi_sup[adult_idx]))
+    print("semi: ", np.array([1, .5])*ttest_ind(behav_semi_sup[juv_idx], behav_semi_sup[adult_idx])) # [1, .5]*[t, p]
     behav_sup = frame.AF_true_frac
     print("sup: ", np.array([1, .5])*ttest_ind(behav_sup[juv_idx], behav_sup[adult_idx]))
 
@@ -154,8 +174,9 @@ def results_plots(min_samples = 800, min_lat = 55):
 
 
 if __name__ == "__main__":
-    #run_experiment()
-    results_plots()
+    name = "JuvAdltSimpleF__JuvFinished.csv"
+    # run_experiment(name)
+    results_plots(name)
     print("Done.")
 
 
