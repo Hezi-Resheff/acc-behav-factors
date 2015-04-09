@@ -48,20 +48,21 @@ def _covYZ(dataX,dataY,dataZ): return np.cov(dataY,dataZ)[0][1]
 def _rXY(dataX,dataY,dataZ): return _covXY(dataX,dataY,dataZ) / (_stdX(dataX,dataY,dataZ)*_stdY(dataX,dataY,dataZ))
 def _rXZ(dataX,dataY,dataZ): return _covXZ(dataX,dataY,dataZ) / (_stdX(dataX,dataY,dataZ)*_stdZ(dataX,dataY,dataZ))
 def _rYZ(dataX,dataY,dataZ): return _covYZ(dataX,dataY,dataZ) / (_stdY(dataX,dataY,dataZ)*_stdZ(dataX,dataY,dataZ))
-    
-def _dbaX(X,Y,Z,winSize=10):
-    Xsmooth = [ X[start:start+winSize].mean() for start in range(winSize/2,len(X)-winSize/2) ]
-    x = np.absolute((X[winSize/2:len(X)-winSize/2] - Xsmooth)).mean()
+
+
+def _dbaX(X, Y, Z, winSize=10):
+    Xsmooth = [ X[start:start+winSize].mean() for start in range(winSize//2, len(X)-winSize//2) ]
+    x = np.absolute((X[winSize//2:len(X)-winSize//2] - Xsmooth)).mean()
     return x
     
 def _dbaY(X,Y,Z,winSize=10):
-    Ysmooth = [ Y[start:start+winSize].mean() for start in range(winSize/2,len(X)-winSize/2) ]
-    y = np.absolute((Y[winSize/2:len(Y)-winSize/2] - Ysmooth)).mean()
+    Ysmooth = [ Y[start:start+winSize].mean() for start in range(winSize//2,len(X)-winSize//2) ]
+    y = np.absolute((Y[winSize//2:len(Y)-winSize//2] - Ysmooth)).mean()
     return y
 
 def _dbaZ(X,Y,Z,winSize=10):
-    Zsmooth = [ Z[start:start+winSize].mean() for start in range(winSize/2,len(X)-winSize/2) ]
-    z = np.absolute((Z[winSize/2:len(Z)-winSize/2] - Zsmooth)).mean()
+    Zsmooth = [ Z[start:start+winSize].mean() for start in range(winSize//2,len(X)-winSize//2) ]
+    z = np.absolute((Z[winSize//2:len(Z)-winSize//2] - Zsmooth)).mean()
     return z
 
 def _odba(X,Y,Z,winSize=10):
@@ -158,7 +159,6 @@ statNames = ['MeanX','MeanY','MeanZ',
              'X 75%','Y 75%','Z 75%']
 
 
-#TODO: put this in the SQL db
 """
 The list of statistics that can be calculated. 
 """

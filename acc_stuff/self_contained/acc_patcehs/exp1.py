@@ -1,13 +1,25 @@
 """
 Part of the "Stage B" research proposal. 
-Classify ACC signals with patches features. Compare to raw data & AcceleRater features. 
+Classify ACC signals with patches features. Compare to raw data & AcceleRater features.
+
+Output used:
+
+{2: 77, 3: 96, 4: 1497, 5: 1859, 6: 286}
+--------------------------------------------------------------------------------
+Raw:  0.62414226987
+MultiScalePatch:  0.869723973456
+AcceleRater:  0.925805434137
+
 """
 import os 
-import numpy as np 
+import numpy as np
+import scipy.stats as stats
 import pandas as pd 
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
+from sklearn.svm import SVC, LinearSVC
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.cluster import MiniBatchKMeans
 from sklearn.cross_validation import cross_val_score
 
 from calcstats import stat_calculator
@@ -18,11 +30,13 @@ class FeatureBase(object):
     def compute(self, samples):
         return np.array([self._compute(sample) for sample in samples])
 
+
 class simple_features(FeatureBase):
     def _compute(self, sample): 
         x, y, z = np.reshape(sample, (len(sample)/3,3)).T 
-        m = [[f(x), f(y), f(z)] for f in (np.mean, np.std, stats.skew, stats.kurtosis) ]
+        m = [[f(x), f(y), f(z)] for f in (np.mean, np.std, stats.skew, stats.kurtosis)]
         return np.array(m).flatten() 
+
 
 class AcceleRaterFeatures(FeatureBase):
     def _compute(self, sample):
@@ -64,26 +78,43 @@ class MultiScalePatches(FeatureBase):
         l = len(row)/3
         row = row.reshape(l, 3).T
         rep = [np.histogram(model['km'].predict(self._get_patches(row, model['scale'])), np.arange(model['cbsize']+1))[0] for model in self._models]
-        return np.hstack(rep)
+        out = np.hstack(rep)
+        return out.astype(float)/out.sum()
 
 
+def go(data_file):
 
-def go():
-    # this is the pipeline to use
-    pipeline = Pipeline([('scaler', StandardScaler()), 
-                         ('classifier', SVC())
-                       ])
+    data_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), data_file)
+    data = pd.DataFrame.from_csv(data_file, index_col=-1, header=None)
 
-    
-    data_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "storks_obs_train.csv")
-    data = [row for row in open(data_file, "r")]
-    
-    X = np.array([row[:-1].split(',') for row in data])
-    y = [row[-1] for row in data]
-    print(X, y)
+    print({val: np.sum((np.array(data.index) == val)) for val in np.unique(data.index)})
+    print("-"*80)
+    datasets = {
+        "Raw: ": data.values,
+        "AcceleRater: ": AcceleRaterFeatures().compute(data.values),
+        "MultiScalePatch: ": MultiScalePatches(scales=[3, 5, 7], size=35).fit(data.values).compute(data.values)
+    }
+    for ds in datasets:
+        print(ds, cross_val_score(Pipeline([('s', StandardScaler()),
+                                            ('c', LinearSVC())]),
+                                  datasets[ds], data.index, cv=4, n_jobs=4).mean())
 
-    # TODO: strip the /n for the row in data, make float, continue... 
+"""
+def test(data_file):
+    data_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), data_file)
+    data = pd.DataFrame.from_csv(data_file, index_col=-1, header=None)
 
+    datasets = {
+        "MultiScalePatch3: ": MultiScalePatches(scales=[3, 5, 7], size=50).fit(data.values).compute(data.values),
+        "MultiScalePatch4: ": MultiScalePatches(scales=[3, 5, 7], size=20).fit(data.values).compute(data.values),
+        "MultiScalePatch5: ": MultiScalePatches(scales=[3, 5, 7], size=35).fit(data.values).compute(data.values),
+    }
+
+    for ds in datasets:
+        p = Pipeline([('s', StandardScaler()),
+                      ('c', LinearSVC())])
+        print(ds, cross_val_score(p, datasets[ds], data.index, cv=2).mean())
+"""
 if __name__ == "__main__":
-    go()
+    go("obs.csv")
 
