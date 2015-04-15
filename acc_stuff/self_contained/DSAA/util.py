@@ -12,6 +12,7 @@ from sklearn.metrics import zero_one_loss, log_loss
 class cmp:
     CMP_MAX = 0
     CMP_LOG = 1
+    CMP_SETS = 2
 
 def compare_partitions_hard(original_partition, new_partition, method):
     hard_new_partition = np.zeros_like(new_partition)
@@ -52,6 +53,10 @@ def compare_partitions(original_partiton, new_partition, method):
             new_as_old[:, old_partition_val] += new_partition[:, prt]
         return log_loss(original_partiton, new_as_old, eps=1e-10)
 
+    elif method == cmp.CMP_SETS:
+        # The score for a cluster mapping is the |intersection| / |union| of the two partitions.
+        # TODO: compute
+        return 0
     else:
         raise TypeError("Compare method not implemented:  %s" % method)
 
