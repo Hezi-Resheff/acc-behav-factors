@@ -14,10 +14,21 @@ class cmp:
     CMP_LOG = 1
     CMP_SETS = 2
 
+def one_hot(partition):
+    """
+    Transform a hard-assignment partition vector [1,2,2,3...] into a matrix with 1-indicators for the 
+    partition [[0,1,0,0], [0,0,1,0], [0,0,1,0], [0,0,0,1]...]
+    """
+    N = len(partition)
+    k = len(np.unique(partition))
+    expanded = np.zeros((N, k))
+    expanded[range(N), partition] = 1
+    return expanded
+
 def compare_partitions_hard(original_partition, new_partition, method):
     hard_new_partition = np.zeros_like(new_partition)
     hard_new_partition[range(new_partition.shape[0]), new_partition.argmax(axis=1)] = 1 
-    return compare_partitions(original_partition, new_partition, method)
+    return compare_partitions(original_partition, hard_new_partition, method)
 
 def compare_partitions(original_partiton, new_partition, method):
     """

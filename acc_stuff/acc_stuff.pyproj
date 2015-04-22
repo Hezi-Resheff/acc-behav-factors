@@ -52,9 +52,6 @@
     <Compile Include="self_contained\acc_patcehs\exp1.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="self_contained\DSAA\clustering.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="self_contained\DSAA\features.py">
       <SubType>Code</SubType>
     </Compile>
