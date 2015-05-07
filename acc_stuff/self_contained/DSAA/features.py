@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd 
 from sklearn.cluster import MiniBatchKMeans
+from sklearn.preprocessing import MinMaxScaler
 
 class FeatureBase(object):
-    def __init__(self): pass
+    def __init__(self, normalize_atches = False): pass
     def compute(self, samples):
         return np.array([self._compute(sample) for sample in samples])
 
@@ -12,19 +13,23 @@ class MultiScalePatches(FeatureBase):
     """
     Represent an ACC sample with a patch-codebook on multiple scales 
     """
-    def __init__(self, scales, size):
+    def __init__(self, scales, size, normalize_patches=False):
         """
         scales - list of scaels to use 
-        size - list of sized of codebooks for each scals | int for 1 size 4 all 
+        size - list of sized of codebooks for each scals | int for 1 size 4 all
+        normalize_patches - bool, if True then each patch is normalized to have mean 0 and std 1
         """
         self._scales = scales
-        self._size = np.ones_like(scales)*size 
+        self._size = np.ones_like(scales)*size
+        self._norm_patches = normalize_patches
         self._models = [{'scale':scale, 'cbsize':sz, 'patches':[], 'km':MiniBatchKMeans(n_clusters=sz)} \
                         for scale, sz in zip(self._scales, self._size)]
 
-
     def _get_patches(self, row, scale):
-        return [row[:, i:i+scale].ravel() for i in range(row.shape[1]-scale)]
+        data = np.array([row[:, i:i+scale].ravel() for i in range(row.shape[1]-scale)])
+        if self._norm_patches:
+            data = MinMaxScaler().fit_transform(data.T).T
+        return data
 
     def _add_patches(self, row):
         for model in self._models:            
