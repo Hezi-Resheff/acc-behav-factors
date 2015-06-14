@@ -45,6 +45,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="rep_shays_exp.py" />
+    <Compile Include="roi\Calibrator.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="roi\downsample4AcceleRater.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="roi\thermal.py">
       <SubType>Code</SubType>
     </Compile>
