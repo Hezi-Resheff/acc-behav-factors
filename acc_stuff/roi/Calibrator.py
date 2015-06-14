@@ -30,11 +30,12 @@ class Calibrator:
             return np.zeros(len(data))
         
         data = data.values 
-        data[0::3] = ( data[0::3] - X_zero ) * X_slope 
-        data[1::3] = ( data[1::3] - Y_zero ) * Y_slope 
-        data[2::3] = ( data[2::3] - Z_zero ) * Z_slope 
-        return data 
+        data[0::3] = ( data[0::3] - X_zero ) * X_slope * Calibrator.EARTH_G
+        data[1::3] = ( data[1::3] - Y_zero ) * Y_slope * Calibrator.EARTH_G
+        data[2::3] = ( data[2::3] - Z_zero ) * Z_slope * Calibrator.EARTH_G 
+        return data
 
     def transfom_all(self, data_frame):
-        return data_frame.apply(lambda row: self.transform(row, tag_id=row.name), axis=1)
-
+        f = data_frame.apply(lambda row: self.transform(row.copy(), tag_id=row.name), axis=1)
+        return f
+        
