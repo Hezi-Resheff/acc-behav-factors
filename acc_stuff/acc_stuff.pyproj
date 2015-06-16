@@ -48,6 +48,9 @@
     <Compile Include="roi\Calibrator.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="roi\chop_obs.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="roi\downsample4AcceleRater.py">
       <SubType>Code</SubType>
     </Compile>
