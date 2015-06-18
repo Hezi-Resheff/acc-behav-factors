@@ -1,5 +1,5 @@
 """
-produce a tag_id, timestamp, behav file from the 10Hz data 
+produce a tag_id, timestamp, behav file from the 10Hz, 3.33Hz data 
 """
 
 import pandas as pd 
@@ -41,7 +41,7 @@ def test_cross_val(obs_file):
     print(cm)
        
 
-def process10Zdata(source_file, obs_file, calib_file):
+def process10Hzdata(source_file, obs_file, calib_file):
     # load
     data = pd.DataFrame.from_csv(source_file, index_col='tag_id')      
     acc_data = data.apply(lambda row: pd.Series(np.array(row.acc_data.split(",")).astype(float)) , axis=1)    
@@ -60,7 +60,12 @@ def process10Zdata(source_file, obs_file, calib_file):
     data["behav"] = lbls
     print(data[["date", "time", "behav"]])
 
-
+def process3Hzdata(source_file, obs_file, calib_file):
+    # load 
+    # calib
+    # behavs
+    #save 
+    pass
 
 if __name__ == "__main__":
     root_dir = "c:\\data\\Vultures"
@@ -68,4 +73,4 @@ if __name__ == "__main__":
     calib_file = os.path.join(root_dir, "params.csv")
     data_file_10hz = os.path.join(root_dir, "Vultures-10hz-10K-rand.csv")
     #test_cross_val(obs_file)
-    process10Zdata(data_file_10hz, obs_file, calib_file)
+    process10Hzdata(data_file_10hz, obs_file, calib_file)
