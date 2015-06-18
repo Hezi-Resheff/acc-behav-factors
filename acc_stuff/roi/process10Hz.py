@@ -28,49 +28,68 @@ def load_obs(obs_file):
             labels.append(label)
     return obs, labels
 
-def test_cross_val(obs_file):
-    # load 
-    data, labels = load_obs(obs_file)
-    stats = stat_calculator().get_stats(data)
 
-    #test
-    data_train, data_test, l_train, l_test =  train_test_split(stats, labels, train_size=.5)  
-    out_l = RandomForestClassifier().fit(data_train, l_train).predict(data_test)
-    cm = confusion_matrix(l_test, out_l)
-    cm = pd.DataFrame(cm, index=np.unique(labels), columns=np.unique(labels))
-    print(cm)
+class Learner(RandomForestClassifier):    
+    @staticmethod
+    def _load(obs_file):
+        data, labels = load_obs(obs_file)
+        stats = stat_calculator().get_stats(data)
+        return stats, labels
+   
+    def fit_w_obs(self, obs_file):                
+        return self.fit(*Learner._load(obs_file))
        
+    def cross_validate(self, obs):
+        data_train, data_test, l_train, l_test =  train_test_split(*Learner._load(obs_file), train_size=.5)  
+        out_l = self.fit(data_train, l_train).predict(data_test)
+        return pd.DataFrame(confusion_matrix(l_test, out_l), index=np.unique(l_train), columns=np.unique(l_train))
+        
+   
 
-def process10Hzdata(source_file, obs_file, calib_file):
+def process10Hzdata(source_file, calib_file):
     # load
-    data = pd.DataFrame.from_csv(source_file, index_col='tag_id')      
+    data = pd.DataFrame.from_csv(source_file, index_col='tag_id').iloc[:10]      
     acc_data = data.apply(lambda row: pd.Series(np.array(row.acc_data.split(",")).astype(float)) , axis=1)    
     
     # calib, downsample
     data_calibrated = Calibrator(calib_file).transfom_all(acc_data)
     data_downsampled = downsample(data_calibrated)
     
-    # behavs
-    data_obs, labels_train = load_obs(obs_file)
-    stats_train = stat_calculator().get_stats(data_obs)    
-    stats_test = stat_calculator().get_stats(data_downsampled.values)
-    lbls = RandomForestClassifier().fit(stats_train, labels_train).predict(stats_test)
-    
-    # pub together and save 
-    data["behav"] = lbls
-    print(data[["date", "time", "behav"]])
-
+    #compute stats
+    stats= stat_calculator().get_stats(data_downsampled.values)
+   
+    return data[["date","time","num_samples"]], stats
+   
+        
 def process3Hzdata(source_file, obs_file, calib_file):
     # load 
-    # calib
-    # behavs
-    #save 
+    # calib   
     pass
+
+def driver(calib, obs, data10, data3):
+    # Train
+    clf = Learner().fit_w_obs(obs)
+
+    # 10Hz data
+    data10, stats10 = process10Hzdata(data_file_10hz , calib_file)
+    lbl10 = clf.predict(stats10)
+    data10["label"] = lbl10
+    print(data10)
+
+    """
+    data3, stats3 = None, None
+    lbl3 = clf.predict(stats3)
+    data3["label"] = lbl
+    print(data3)
+    """
 
 if __name__ == "__main__":
     root_dir = "c:\\data\\Vultures"
     obs_file = os.path.join(root_dir, "vultures.csv")
     calib_file = os.path.join(root_dir, "params.csv")
     data_file_10hz = os.path.join(root_dir, "Vultures-10hz-10K-rand.csv")
-    #test_cross_val(obs_file)
-    process10Hzdata(data_file_10hz, obs_file, calib_file)
+    data_file_3Hz = None
+    driver(calib_file, obs_file ,data_file_10hz, data_file_3Hz)
+    print(Learner().cross_validate(obs_file))
+   
+    
