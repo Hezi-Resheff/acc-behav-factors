@@ -55,7 +55,10 @@
     <Compile Include="roi\downsample4AcceleRater.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="roi\process10Hz.py">
+    <Compile Include="roi\odba.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="roi\process_all_ACC_for_roi.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="roi\thermal.py">

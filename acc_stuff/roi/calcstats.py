@@ -50,22 +50,22 @@ def _rXZ(dataX,dataY,dataZ): return _covXZ(dataX,dataY,dataZ) / (_stdX(dataX,dat
 def _rYZ(dataX,dataY,dataZ): return _covYZ(dataX,dataY,dataZ) / (_stdY(dataX,dataY,dataZ)*_stdZ(dataX,dataY,dataZ))
 
 
-def _dbaX(X, Y, Z, winSize=10):
+def _dbaX(X, Y, Z, winSize=5):
     Xsmooth = [ X[start:start+winSize].mean() for start in range(winSize//2, len(X)-winSize//2) ]
     x = np.absolute((X[winSize//2:len(X)-winSize//2] - Xsmooth)).mean()
     return x
     
-def _dbaY(X,Y,Z,winSize=10):
+def _dbaY(X,Y,Z,winSize=5):
     Ysmooth = [ Y[start:start+winSize].mean() for start in range(winSize//2,len(X)-winSize//2) ]
     y = np.absolute((Y[winSize//2:len(Y)-winSize//2] - Ysmooth)).mean()
     return y
 
-def _dbaZ(X,Y,Z,winSize=10):
+def _dbaZ(X,Y,Z,winSize=5):
     Zsmooth = [ Z[start:start+winSize].mean() for start in range(winSize//2,len(X)-winSize//2) ]
     z = np.absolute((Z[winSize//2:len(Z)-winSize//2] - Zsmooth)).mean()
     return z
 
-def _odba(X,Y,Z,winSize=10):
+def _odba(X,Y,Z,winSize=5):
     return _dbaX(X,Y,Z,winSize) + _dbaY(X,Y,Z,winSize) + _dbaZ(X,Y,Z,winSize)
 
 def _meandiffXY(dataX,dataY,dataZ): return (dataX - dataY).mean()
