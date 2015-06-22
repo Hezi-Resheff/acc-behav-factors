@@ -1,5 +1,6 @@
 import numpy as np
 
+#TODO: make this work on x,y,z in 1D with -1,0,0,-1... (check!)
 smooth_kernel = np.array([-1, -1,  4, -1, -1])/5.0
 
 def odba(sample):

@@ -67,11 +67,11 @@ class Learner(RandomForestClassifier):
 
 def process_input_data(source_file, calib_file, sample3Hz=True):
     # load
-    data = pd.DataFrame.from_csv(source_file, index_col=0, header=None)[:10000]
-    data.drop(data.index[data.index.isin([1559, 2749, 3083])], inplace=True) # these are not Vultures
-    data.columns = ["date", "time", "num_samples", "acc_data"]
+    data = pd.DataFrame.from_csv(source_file)
+       
+    # acc    
     acc_data = data.apply(lambda row: pd.Series(np.array(row.acc_data.split(",")).astype(float)) , axis=1)    
-        
+            
     # calib
     processed_acc = Calibrator(calib_file).transfom_all(acc_data)       
 
@@ -88,45 +88,61 @@ def process_input_data(source_file, calib_file, sample3Hz=True):
     return data[["date","time","num_samples", "odba"]], stats
    
 
-def driver(root_dir, calib, obs, data10, data3, clf_path=None):
-    # obs, calib
-    obs_file = os.path.join(root_dir, obs)
-    calib_file = os.path.join(root_dir, calib)
-    # in
-    data_file_10hz = os.path.join(root_dir, data10)
-    data_file_3Hz = os.path.join(root_dir, data3)
-    # out
-    out_10 = os.path.join(root_dir, "vultures10hz__out.csv")
-    out_3 = os.path.join(root_dir,  "vultures3hz__out.csv")
-
+def driver(root_dir, calib, obs, dir_in, dir_out, sample=True, clf_path=None):
+       
     if clf_path is not None:
         print("Loading classifier...")
         clf =  joblib.load(clf_path)
     else:
          # Train and save 
-        cm = Learner().cross_validate(obs_file)
+        cm = Learner().cross_validate(obs)
         print(cm)
-        clf = Learner().fit_w_obs(obs_file)                
+        clf = Learner().fit_w_obs(obs)                
         joblib.dump(clf, os.path.join(root_dir, "clf", "clf_vultures")) 
     
-    # 10Hz data
-    data10, stats10 = process_input_data(data_file_10hz , calib_file, sample3Hz=True)
-    lbl10 = clf.predict(stats10)
-    data10["label"] = lbl10
-    print(data10["odba"].groupby(data10.label).mean())
-    data10.to_csv(out_10)
-    
+    # First the 10Hz data
+    file_list = os.listdir(dir_in)
+    for f in file_list:
+        data, stats = process_input_data(os.path.join(dir_in, f), calib, sample3Hz=sample)
+        data["label"] = clf.predict(stats)
+        data.to_csv(os.path.join(dir_out, f))
 
-    data3, stats3 = process_input_data(data_file_3Hz , calib_file, sample3Hz=False)
-    lbl3 = clf.predict(stats3)
-    data3["label"] = lbl3
-    print(data3["odba"].groupby(data3.label).mean())
-    data3.to_csv(out_3)
-    
+   
+def split(path, out_dir):
+    """Split by tag_id """
+    # load
+    data = pd.DataFrame.from_csv(path, index_col=0, header=None)
+    data.columns = ["date", "time", "num_samples", "acc_data"]
+
+    # clean
+    drop_list = [178, 179, 496, 629, 1559, 2305, 2553, 2569, 2571, 2584, 2746, 2749, 3059, 3083, 3724, 3725]
+    data.drop(data.index[data.index.isin(drop_list)], inplace=True) # these are not Vultures
+
+    for name, frame in data.groupby(data.index):
+        frame.to_csv(os.path.join(out_dir, str(name)+".csv"))
+
+        
 if __name__ == "__main__":
     root_dir = "c:\\data\\Vultures"   
     clf_path = os.path.join(root_dir, "clf", "clf_vultures")
-    driver(root_dir, "params.csv", "vultures.csv" ,"vultures10hz_all.csv", "vultures3hz_all.csv", None)
+    calib = os.path.join(root_dir, "params.csv")
+    obs = os.path.join(root_dir, "vultures.csv")
+    
+    data10_dir = os.path.join(root_dir,"tags", "10")
+    data3_dir = os.path.join(root_dir, "tags", "3")
+    data10_dir_out = os.path.join(root_dir, "out", "10")
+    data3_dir_out = os.path.join(root_dir, "out", "3")
+    
+    """
+    tag_dir_10 = os.path.join(root_dir, "tags", "10")
+    tag_dir_3 = os.path.join(root_dir, "tags", "3")
+    split(os.path.join(root_dir, "vultures3hz_all.csv"), tag_dir_3)
+    """
+
+
+    #driver(root_dir, calib, obs, data3_dir, data3_dir_out,sample=False, clf_path=clf_path)
+    driver(root_dir, calib, obs, data10_dir, data10_dir_out,sample=True, clf_path=clf_path)
+    
     
    
     
