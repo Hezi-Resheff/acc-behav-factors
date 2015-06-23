@@ -55,6 +55,9 @@
     <Compile Include="roi\downsample4AcceleRater.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="roi\missing_dates.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="roi\odba.py">
       <SubType>Code</SubType>
     </Compile>
