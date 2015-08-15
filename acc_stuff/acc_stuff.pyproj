@@ -67,6 +67,10 @@
     <Compile Include="roi\thermal.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Ron\features.py" />
+    <Compile Include="Ron\pelican_factorization.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="self_contained\acc_patcehs\calcstats.py" />
     <Compile Include="self_contained\acc_patcehs\exp1.py">
       <SubType>Code</SubType>
@@ -91,6 +95,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Ron\" />
     <Folder Include="self_contained\" />
     <Folder Include="self_contained\acc_patcehs\" />
     <Folder Include="self_contained\DSAA\" />
