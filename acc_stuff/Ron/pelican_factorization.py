@@ -12,6 +12,7 @@ import os
 from features import *   
 
 ROOT = "c:\\data\\Ron\\NoFlight"
+ROOT = "C:\\Users\\t-yeresh\\data\\Ron\\NoFlight"
 
 # convert to csv files... 
 def convert_data_csv():    
@@ -31,7 +32,7 @@ def process_data(k=10):
     feature =  MultiScalePatches(scales=[4, 8], size=50, normalize_patches=True).fit(data_all).compute(data_all)
 
     print("Training Model")
-    out = NMF(n_components=k).fit_transform(feature).argmax(axis=1)
+    out = NMF(n_components=k).fit_transform(feature) #.argmax(axis=1)
        
     print("saving...")
     pd.DataFrame(out, index_all).to_csv(os.path.join(ROOT, "out" ,"out.csv"))
@@ -41,7 +42,7 @@ def process_data(k=10):
          
 if __name__ == "__main__":
     #convert_data_csv()
-    process_data()
+    process_data(k=5)
 
 
 
