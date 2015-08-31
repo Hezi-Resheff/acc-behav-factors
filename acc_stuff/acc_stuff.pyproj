@@ -71,6 +71,12 @@
     <Compile Include="Ron\pelican_factorization.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Sahsa\features.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Sahsa\leg-tags.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="self_contained\acc_patcehs\calcstats.py" />
     <Compile Include="self_contained\acc_patcehs\exp1.py">
       <SubType>Code</SubType>
@@ -95,6 +101,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Sahsa\" />
     <Folder Include="Ron\" />
     <Folder Include="self_contained\" />
     <Folder Include="self_contained\acc_patcehs\" />
