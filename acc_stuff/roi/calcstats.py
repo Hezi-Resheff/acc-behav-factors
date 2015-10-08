@@ -4,6 +4,8 @@ LEGACY CODE
 """
 
 import numpy as np
+import pandas as pd 
+import os 
 from scipy import stats
 
 #data formats
@@ -233,8 +235,14 @@ class stat_calculator():
         
         
 
+if __name__ == "__main__":
+    """ Turn this into a util for tranforming raw ACC data into stats file """
+    PATH = "C:\\Users\\t-yeresh\\data\\storks2012"
+    IN = "obs.csv"
+    OUT = "obs-stats.csv"
+    f = pd.DataFrame.from_csv(os.path.join(PATH, IN), header=None, index_col=None)
+    stats, labels = stat_calculator().get_stats_labels(f.values)
+    pd.DataFrame(stats, labels, columns=statNames).to_csv(os.path.join(PATH, OUT))
 
-
-
-
+    
     
