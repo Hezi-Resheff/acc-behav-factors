@@ -17,8 +17,8 @@ mpl.rcParams['lines.markersize'] = 8
 mpl.rcParams['lines.markeredgewidth'] = 1.0
 
 
-DATA_PATH = "\\data\\storks2012"
-TABLE_DATA_PATH = "\\Documents\\PhD\\DSAA\\experiments"
+DATA_PATH = "C:\\Users\\t-yeresh\\data\\storks2012"
+TABLE_DATA_PATH = "C:\\Users\\t-yeresh\\Google Drive\\PhD\\Manuscripts\\DSAA15--journal version\\res"
 
 
 def loss_plot(in_name, out_name, y_label):
@@ -26,7 +26,7 @@ def loss_plot(in_name, out_name, y_label):
     Make plots with no background, large text, large legend, large X maks -- LARGE EVERYTHING! 
     """
     f = pd.DataFrame.from_csv(os.path.join(TABLE_DATA_PATH, in_name))
-    f.plot(style="-x")
+    f.plot(style=['>:','<--','^-.', 's--', 'o-'])
     plt.xlabel("Number of clusters", fontsize=20)
     plt.ylabel(y_label, fontsize=20)
     plt.legend(loc = 'center left', bbox_to_anchor=(1.0, 0.5))
