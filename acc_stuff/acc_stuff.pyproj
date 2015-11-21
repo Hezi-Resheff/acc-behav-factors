@@ -67,8 +67,12 @@
     <Compile Include="roi\thermal.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Ron\calcstats.py" />
     <Compile Include="Ron\features.py" />
     <Compile Include="Ron\pelican_factorization.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Ron\prob_clf.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Sahsa\features.py">

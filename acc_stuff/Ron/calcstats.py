@@ -41,9 +41,9 @@ def _normX(dataX,dataY,dataZ): return np.linalg.norm(dataX)
 def _normY(dataX,dataY,dataZ): return np.linalg.norm(dataY)
 def _normZ(dataX,dataY,dataZ): return np.linalg.norm(dataZ)
 
-def _covXY(dataX,dataY,dataZ): return np.cov(dataX,dataY)[0][1]
-def _covXZ(dataX,dataY,dataZ): return np.cov(dataX,dataZ)[0][1]
-def _covYZ(dataX,dataY,dataZ): return np.cov(dataY,dataZ)[0][1]
+def _covXY(dataX,dataY,dataZ): return np.cov(dataX, dataY)[0][1]
+def _covXZ(dataX,dataY,dataZ): return np.cov(dataX, dataZ)[0][1]
+def _covYZ(dataX,dataY,dataZ): return np.cov(dataY, dataZ)[0][1]
     
 def _rXY(dataX,dataY,dataZ): return _covXY(dataX,dataY,dataZ) / (_stdX(dataX,dataY,dataZ)*_stdY(dataX,dataY,dataZ))
 def _rXZ(dataX,dataY,dataZ): return _covXZ(dataX,dataY,dataZ) / (_stdX(dataX,dataY,dataZ)*_stdZ(dataX,dataY,dataZ))
@@ -214,7 +214,7 @@ class stat_calculator():
        
         return [ _stat_functions[i](dataX, dataY, dataZ) for i in self._mask ]
     
-    def get_stats(self, data):
+    def get_stats(self,data):
         stats = np.array( [ self._calc_row( np.array(row).astype(float) ) for row in data ] )
         stats[np.isnan(stats)] = 0
         return stats
