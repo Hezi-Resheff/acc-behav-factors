@@ -5,7 +5,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>e1aed930-5e79-4097-9ba3-ed43fb63e1e1</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>lifetime_factor_plots_semi_sup.py</StartupFile>
+    <StartupFile>Ron\two_stage.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -73,6 +73,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Ron\prob_clf.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Ron\two_stage.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Sahsa\features.py">
